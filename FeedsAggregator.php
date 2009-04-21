@@ -4,11 +4,13 @@ class FeedsAggregator
 {
   private $feeds;
   private $mainClassName;
+  private $environment;
 
-  public function __construct($feeds, $mainClassName)
+  public function __construct($feeds, $mainClassName, $environment)
   {
     $this->feeds = $feeds;
     $this->mainClassName = $mainClassName;
+    $this->environment = $environment;
   }
 
   public function aggregate()
@@ -34,20 +36,20 @@ class FeedsAggregator
       $feed->setLastParsedAt(date('Y-m-d H:i:s', time()));
       $feed->save();
     }
-    FeedsAggregator::reportError('', true);
+    FeedsAggregator::reportError('', true, $this->environment);
     echo "Aggregation completed.";
   }
 
-  public static function reportError($msg = '', $flush = false)
+  public static function reportError($msg = '', $flush = false, $environment = '')
   {
     static $str;
     if ($msg)
     {
       $str .= $msg . '        ';
     }
-    if ($flush & $str)
+    if ($flush && $str)
     {
-      mail('developers@studentbeans.com', 'Feeds Aggregator error', $str);
+      mail('developers@studentbeans.com', 'Feeds Aggregator error - ' . $environment, $str);
     }
     return $str;
   }
