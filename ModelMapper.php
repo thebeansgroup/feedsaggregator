@@ -17,13 +17,31 @@ abstract class ModelMapper
 
   public function doMapping($feedId)
   {
-    if ($this->isDuplicateItem())
+    $isItemToInsert = true;
+    if ($oldItem = $this->isItemAlreadyInTheDatabase())
     {
-      return;
+      $this->refreshItem($oldItem);
+      $isItemToInsert = false;
     }
-    $this->populateDatabase($feedId);
+    if ($oldItems = $this->isItemDuplicated())
+    {
+      $isItemToInsert = false;
+    }
+    if ($isItemToInsert)
+    {
+      $this->insertItem($feedId);
+    }
   }
 
-  abstract public function isDuplicateItem();
-  abstract public function populateDatabase($feedId);
+ /**
+  * @return boolean|object - false if the item is not in the database yet, the object already
+  *                          in the database otherwise
+  */
+  abstract public function isItemAlreadyInTheDatabase();
+  abstract public function refreshItem($oldItem);
+ /**
+  * @return boolean - true if we have already that item from any other feed, false otherwise
+  */
+  abstract public function isItemDuplicated();
+  abstract public function insertItem($feedId);
 }

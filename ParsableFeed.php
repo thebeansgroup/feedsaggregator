@@ -9,5 +9,5 @@ interface ParsableFeed
   public function isCompressed();
   public function getCompressionType();
   public function getPriority();
-  public function setLastParsedAt($v);
+  public function refreshLastParsedAt();
 }

@@ -33,7 +33,7 @@ class FeedsAggregator
       $feedHandler->closeFeed();
       $feedHandler->deleteFeed();
 
-      $feed->setLastParsedAt(date('Y-m-d H:i:s', time()));
+      $feed->refreshLastParsedAt();
       $feed->save();
     }
     FeedsAggregator::reportError('', true, $this->environment);
