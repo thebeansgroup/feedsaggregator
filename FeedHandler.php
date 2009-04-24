@@ -43,7 +43,7 @@ abstract class FeedHandler
     $feedUrl = $this->feed->getUrl();
     if (! $feedUrl)
     {
-      FeedsAggregator::reportError("Feeds Aggregator - Couldn't retrieve the URL for the feed {$feed->getId()}");
+      FeedsAggregator::reportError("Feeds Aggregator - Couldn't retrieve the URL for the feed {$this->feed->getId()}");
     }
     $outputFilepath = '/tmp/jobs-' . rand() . '-' . time();
     exec("wget --output-document=$outputFilepath '$feedUrl'");
@@ -51,7 +51,7 @@ abstract class FeedHandler
 
     if (!filesize($outputFilepath))
     {
-      FeedsAggregator::reportError("Feeds Aggregator - Couldn't download the feed {$feed->getId()}");
+      FeedsAggregator::reportError("Feeds Aggregator - Couldn't download the feed {$this->feed->getId()}");
     }
 
     if ($this->feed->isCompressed())
@@ -81,7 +81,7 @@ abstract class FeedHandler
                 $outDir =  dirname($outputFilepath);
                 $outputFilepath = $outDir . '/' . $output[0];
                 if (!file_exists($outputFilepath))
-                    FeedsAggregator::reportError("Error untarring file for feed ".$feed->getId());
+                    FeedsAggregator::reportError("Error untarring file for feed ".$this->feed->getId());
                 break;
         }
     }
