@@ -45,7 +45,7 @@ class FeedsAggregator
     static $str;
     if ($msg)
     {
-      $str .= $msg . '        ';
+      $str .= $msg . "\n\n        ";
     }
     if ($flush && $str)
     {
