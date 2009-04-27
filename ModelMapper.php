@@ -56,7 +56,10 @@ abstract class ModelMapper
         {
           $this->dbConnection->rollBack();
         }
-        throw $e;
+        $feedConverterDump = print_r($this->feedConverter, true);
+        $errorMsg = "Feeds Aggregator Error - Unable to map an item in the feed with ID=$feedId }\n$feedConverterDump\n\n";
+        FeedsAggregator::reportError($errorMsg);
+        echo $errorMsg;
       }
     }
   }
