@@ -44,7 +44,7 @@ class FeedsAggregator
       }
     }
     FeedsAggregator::reportError('', true, $this->environment);
-    echo "\n\n\nAggregation completed.\n\n\n";
+    echo "<br /><br /><br />Aggregation completed.<br /><br /><br />";
   }
 
   public static function reportError($msg = '', $flush = false, $environment = '')
