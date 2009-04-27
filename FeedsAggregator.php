@@ -35,7 +35,7 @@ class FeedsAggregator
         $feedHandler->closeFeed();
         $feedHandler->deleteFeed();
   
-        $feed->refreshLastParsedAt();
+        $feed->refreshTimestamp();
         $feed->save();
       }
       catch(Exception $e)
