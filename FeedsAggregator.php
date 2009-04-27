@@ -49,7 +49,7 @@ class FeedsAggregator
     }
     if ($flush && $str)
     {
-      mail('developers@studentbeans.com', 'Feeds Aggregator error - ' . $environment, $str);
+      mail('developers@studentbeans.com', "Feeds Aggregator error - {$_SERVER['HTTP_HOST']} - " . $environment, $str);
     }
     return $str;
   }
