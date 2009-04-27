@@ -66,7 +66,7 @@ abstract class ModelMapper
   *                          in the database otherwise
   */
   abstract public function isItemAlreadyInTheDatabase();
-  abstract public function refreshItem($oldItem);
+  abstract public function refreshItem($item);
  /**
   * @return boolean - true if we have already that item from any other feed, false otherwise
   */
