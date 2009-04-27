@@ -23,7 +23,7 @@ abstract class FeedConverter
   {
     if (! in_array($methodName, $this->requiredGetters))
     {
-      FeedsAggregator::reportError("Feeds Aggregator - The method $methodName is not provided.");
+      throw new Exception("Feeds Aggregator - The method $methodName is not provided.");
     }
     $directGetters = $this->getDirectGetters();
     if (array_key_exists($methodName, $directGetters))
@@ -36,12 +36,12 @@ abstract class FeedConverter
       else // the value corresponding to the getter is empty-string. That should mean the getter is defined
            // in the subclass
       {
-        FeedsAggregator::reportError("Feeds Aggregator - Couldn't get the method $methodName. (1)");
+        throw new Exception("Feeds Aggregator - Couldn't get the method $methodName. (1)");
       }
     }
     else
     {
-      FeedsAggregator::reportError("Feeds Aggregator - Couldn't get the method $methodName.");
+      throw new Exception("Feeds Aggregator - Couldn't get the method $methodName.");
     }
   }
 

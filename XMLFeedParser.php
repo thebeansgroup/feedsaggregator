@@ -14,7 +14,7 @@ class XMLFeedParser extends FeedParser
   {
     if (!$this->parser->open($filepath))
     {
-      FeedsAggregator::reportError("Feeds Aggregator - XML Reader - failed to open file $filepath");
+      throw new Exception("Feeds Aggregator - XML Reader - failed to open file $filepath");
     }
   }
 

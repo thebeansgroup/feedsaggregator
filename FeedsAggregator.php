@@ -52,11 +52,11 @@ class FeedsAggregator
     static $str;
     if ($msg)
     {
-      $str .= $msg . "\n\n\n        ";
+      $str .= $msg . "\n\n\n||||||||||||||||||| END ERROR MESSAGE ||||||||||||||||||\n\n\n        ";
     }
     if ($flush && $str)
     {
-      mail('daniele@studentbeans.com', "Feeds Aggregator error - {$_SERVER['HTTP_HOST']} - " . $environment, $str);
+      mail('developers@studentbeans.com', "Feeds Aggregator error - {$_SERVER['HTTP_HOST']} - " . $environment, $str);
       echo $str;
     }
     return $str;

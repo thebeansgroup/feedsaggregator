@@ -18,7 +18,7 @@ abstract class FeedHandler
     $feedParserClassname = strtoupper($feed->getType()) . 'FeedParser';
     if (!class_exists($feedParserClassname))
     {
-      FeedsAggregator::reportError("Feeds Aggregator - Couldn't retrieve the parser");
+      throw new Exception("Feeds Aggregator - Couldn't retrieve the parser");
     }
     $this->feedParser = new $feedParserClassname();
   }
@@ -28,12 +28,12 @@ abstract class FeedHandler
     $feedName = $feed->getName();
     if (! $feedName)
     {
-      FeedsAggregator::reportError("Feeds Aggregator - Couldn't retrieve the name for the feed {$feed->getUrl()}");
+      throw new Exception("Feeds Aggregator - Couldn't retrieve the name for the feed {$feed->getUrl()}");
     }
     $classname = 'FeedHandler_' . $feedName;
     if (!class_exists($classname))
     {
-      FeedsAggregator::reportError("Feeds Aggregator - Couldn't retrieve the handler for the feed {$feed->getUrl()}");
+      throw new Exception("Feeds Aggregator - Couldn't retrieve the handler for the feed {$feed->getUrl()}");
     }
     return new $classname($feed);
   }
@@ -43,7 +43,7 @@ abstract class FeedHandler
     $feedUrl = $this->feed->getUrl();
     if (! $feedUrl)
     {
-      FeedsAggregator::reportError("Feeds Aggregator - Couldn't retrieve the URL for the feed {$this->feed->getId()}");
+      throw new Exception("Feeds Aggregator - Couldn't retrieve the URL for the feed {$this->feed->getId()}");
     }
     $outputFilepath = '/tmp/jobs-' . rand() . '-' . time();
     exec("wget --output-document=$outputFilepath '$feedUrl'");
@@ -51,7 +51,7 @@ abstract class FeedHandler
 
     if (!filesize($outputFilepath))
     {
-      FeedsAggregator::reportError("Feeds Aggregator - Couldn't download the feed {$this->feed->getId()}");
+      throw new Exception("Feeds Aggregator - Couldn't download the feed {$this->feed->getId()}");
     }
 
     if ($this->feed->isCompressed())
