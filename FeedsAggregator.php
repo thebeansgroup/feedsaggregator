@@ -19,22 +19,29 @@ class FeedsAggregator
 
     foreach ($this->feeds as $feed)
     {
-      $feedHandler = FeedHandler::getInstance($feed);
-
-      $feedHandler->downloadFeed();
-      $feedHandler->openFeed();
-      while ($itemArrayFromFeed = $feedHandler->getNextItem())
+      try
       {
-        $feedConverter = FeedConverter::getInstance($itemArrayFromFeed, $this->mainClassName, strtolower($feed->getUniqueIdentifier()));
-
-        $modelMapper = ModelMapper::getInstance($feedConverter, $this->mainClassName);
-        $modelMapper->doMapping($feed->getId());
+        $feedHandler = FeedHandler::getInstance($feed);
+  
+        $feedHandler->downloadFeed();
+        $feedHandler->openFeed();
+        while ($itemArrayFromFeed = $feedHandler->getNextItem())
+        {
+          $feedConverter = FeedConverter::getInstance($itemArrayFromFeed, $this->mainClassName, strtolower($feed->getUniqueIdentifier()));
+  
+          $modelMapper = ModelMapper::getInstance($feedConverter, $this->mainClassName);
+          $modelMapper->doMapping($feed->getId());
+        }
+        $feedHandler->closeFeed();
+        $feedHandler->deleteFeed();
+  
+        $feed->refreshLastParsedAt();
+        $feed->save();
       }
-      $feedHandler->closeFeed();
-      $feedHandler->deleteFeed();
-
-      $feed->refreshLastParsedAt();
-      $feed->save();
+      catch(Exception $e)
+      {
+        self::reportError("Error parsing the feed with id {$feed->getUniqueIdentifier()} \n\n" . $e);
+      }
     }
     FeedsAggregator::reportError('', true, $this->environment);
     echo "\n\n\nAggregation completed.\n\n\n";
@@ -49,7 +56,8 @@ class FeedsAggregator
     }
     if ($flush && $str)
     {
-      mail('developers@studentbeans.com', "Feeds Aggregator error - {$_SERVER['HTTP_HOST']} - " . $environment, $str);
+      mail('daniele@studentbeans.com', "Feeds Aggregator error - {$_SERVER['HTTP_HOST']} - " . $environment, $str);
+      echo $str;
     }
     return $str;
   }
