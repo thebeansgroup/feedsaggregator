@@ -27,7 +27,7 @@ class FeedsAggregator
         $feedHandler->openFeed();
         while ($itemArrayFromFeed = $feedHandler->getNextItem())
         {
-          $feedConverter = FeedConverter::getInstance($itemArrayFromFeed, $this->mainClassName, strtolower($feed->getUniqueIdentifier()));
+          $feedConverter = FeedConverter::getInstance($itemArrayFromFeed, $this->mainClassName, $feed->getUniqueIdentifier());
   
           $modelMapper = ModelMapper::getInstance($feedConverter, $this->mainClassName);
           $modelMapper->doMapping($feed->getId());

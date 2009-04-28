@@ -21,12 +21,12 @@ abstract class ModelMapper
   {
     $isDatabaseTransactionEnabled = true;
     $isItemToInsert = true;
-    if ($oldItem = $this->isItemAlreadyInTheDatabase())
+    if ($oldItem = $this->getItemFromDataStore())
     {
       $this->refreshItem($oldItem);
       $isItemToInsert = false;
     }
-    if ($oldItems = $this->isItemDuplicated())
+    if ($this->isItemDuplicated())
     {
       $isItemToInsert = false;
     }
@@ -67,7 +67,7 @@ abstract class ModelMapper
   * @return boolean|object - false if the item is not in the database yet, the object already
   *                          in the database otherwise
   */
-  abstract public function isItemAlreadyInTheDatabase();
+  abstract public function getItemFromDataStore();
   abstract public function refreshItem($item);
  /**
   * @return boolean - true if we have already that item from any other feed, false otherwise
