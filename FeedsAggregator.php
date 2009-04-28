@@ -26,17 +26,23 @@ class FeedsAggregator
         $feedHandler->downloadFeed();
         $feedHandler->openFeed();
 
-        try
+        while (true)
         {
-          $itemArrayFromFeed = $feedHandler->getNextItem();
-        }
-        catch (Exception $e)
-        {
-          self::reportError("Error parsing the feed with id {$feed->getUniqueIdentifier()} \n\n" . $e);
-        }
+          try
+          {
+            $itemArrayFromFeed = $feedHandler->getNextItem();
+          }
+          catch (Exception $e)
+          {
+            self::reportError("Error parsing the feed with id {$feed->getUniqueIdentifier()} \n\n" . $e);
+            continue;
+          }
 
-        while ($itemArrayFromFeed)
-        {
+          if (! is_array($itemArrayFromFeed))
+          {
+            break;
+          }
+
           $feedConverter = FeedConverter::getInstance($itemArrayFromFeed, $this->mainClassName, $feed->getUniqueIdentifier());
   
           $modelMapper = ModelMapper::getInstance($feedConverter, $this->mainClassName);
