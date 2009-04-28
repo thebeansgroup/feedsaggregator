@@ -29,7 +29,7 @@ abstract class FeedConverter
     if (array_key_exists($methodName, $directGetters))
     {
       $fieldName = $directGetters[$methodName];
-      if ($fieldName)
+      if ($fieldName && isset($this->itemArray[$fieldName]))
       {
         return $this->itemArray[$fieldName];
       }
