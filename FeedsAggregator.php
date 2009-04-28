@@ -34,7 +34,7 @@ class FeedsAggregator
           }
           catch (Exception $e)
           {
-            self::reportError("Error parsing the feed with id {$feed->getUniqueIdentifier()} \n\n" . $e);
+            self::reportError("Error parsing the feed with id {$feed->getHandlerIdentifier()} \n\n" . $e);
             continue;
           }
 
@@ -43,7 +43,7 @@ class FeedsAggregator
             break;
           }
 
-          $feedConverter = FeedConverter::getInstance($itemArrayFromFeed, $this->mainClassName, $feed->getUniqueIdentifier());
+          $feedConverter = FeedConverter::getInstance($itemArrayFromFeed, $this->mainClassName, $feed->getHandlerIdentifier());
   
           $modelMapper = ModelMapper::getInstance($feedConverter, $this->mainClassName);
           $modelMapper->doMapping($feed->getId());
@@ -56,7 +56,7 @@ class FeedsAggregator
       }
       catch(Exception $e)
       {
-        self::reportError("Error parsing the feed with id {$feed->getUniqueIdentifier()} \n\n" . $e);
+        self::reportError("Error parsing the feed with id {$feed->getHandlerIdentifier()} \n\n" . $e);
       }
     }
     FeedsAggregator::reportError('', true, $this->environment);
