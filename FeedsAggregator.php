@@ -25,7 +25,17 @@ class FeedsAggregator
   
         $feedHandler->downloadFeed();
         $feedHandler->openFeed();
-        while ($itemArrayFromFeed = $feedHandler->getNextItem())
+
+        try
+        {
+          $itemArrayFromFeed = $feedHandler->getNextItem();
+        }
+        catch (Exception $e)
+        {
+          self::reportError("Error parsing the feed with id {$feed->getUniqueIdentifier()} \n\n" . $e);
+        }
+
+        while ($itemArrayFromFeed)
         {
           $feedConverter = FeedConverter::getInstance($itemArrayFromFeed, $this->mainClassName, $feed->getUniqueIdentifier());
   

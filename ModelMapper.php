@@ -26,7 +26,7 @@ abstract class ModelMapper
       $this->refreshItem($oldItem);
       $isItemToInsert = false;
     }
-    if ($this->isItemDuplicated())
+    if ($this->itemDataAlreadyExists())
     {
       $isItemToInsert = false;
     }
@@ -72,6 +72,6 @@ abstract class ModelMapper
  /**
   * @return boolean - true if we have already that item from any other feed, false otherwise
   */
-  abstract public function isItemDuplicated();
+  abstract public function itemDataAlreadyExists();
   abstract public function insertItem($feedId);
 }

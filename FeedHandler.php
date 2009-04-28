@@ -10,6 +10,7 @@ abstract class FeedHandler
   abstract protected function getItemTag();
   abstract protected function getElementsArray();
   abstract protected function getExtraElements();
+  abstract protected function getOptionalElements();
 
   public function __construct(ParsableFeed $feed)
   {
@@ -100,6 +101,18 @@ abstract class FeedHandler
     {
       return false;
     }
+    // check whether some mandatory fields are empty
+    foreach($item as $element => $value)
+    {
+      if (trim($value) == '')
+      {
+        if (!in_array($element, $this->getOptionalElements())) // the item is NOT optional
+        {
+          throw new Exception("The mandatory element $element is empty in the feed {$this->feedFilepath} for the item with this details " .  print_r($item, true));
+        }
+      }
+    }
+
     $item = array_merge($item, $this->getExtraElements());
     foreach($item as $elementName => $elementValue)
     {
@@ -118,6 +131,7 @@ abstract class FeedHandler
 
   protected function generalFilter($value)
   {
+    $value = trim($value);
     return $this->html_entity_decode_utf8($value);
   }
 
