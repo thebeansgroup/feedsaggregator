@@ -37,7 +37,7 @@ abstract class FeedConverter
         }
         else
         {
-          return;
+          return NULL;
         }
       }
       else // the value corresponding to the getter is empty-string. That should mean the getter is defined
