@@ -3,18 +3,21 @@
 abstract class ModelMapper
 {
   protected $feedConverter;
-  protected $dbConnection; 
+  protected $dbConnection;
+  protected $mainClassName;
 
-  public function __construct($feedConverter)
+  public function __construct($feedConverter, $mainClassName)
   {
+    $this->mainClassName = $mainClassName;
     $this->feedConverter = $feedConverter;
-    $this->dbConnection = Propel::getConnection(GbJobPeer::DATABASE_NAME, Propel::CONNECTION_WRITE);
+    $peerClassName = $this->mainClassName . 'Peer';
+    $this->dbConnection = Propel::getConnection(constant($peerClassName . '::DATABASE_NAME'), Propel::CONNECTION_WRITE);
   }
 
   public static function getInstance($feedConverter, $mainClassName)
   {
     $className = $mainClassName . 'ModelMapper';
-    return new $className($feedConverter);
+    return new $className($feedConverter, $mainClassName);
   }
 
   public function doMapping($feedId)
