@@ -29,14 +29,21 @@ abstract class FeedConverter
     if (array_key_exists($methodName, $directGetters))
     {
       $fieldName = $directGetters[$methodName];
-      if ($fieldName && isset($this->itemArray[$fieldName]))
+      if ($fieldName)
       {
-        return $this->itemArray[$fieldName];
+        if (isset($this->itemArray[$fieldName]))
+        {
+          return $this->itemArray[$fieldName];
+        }
+        else
+        {
+          return;
+        }
       }
       else // the value corresponding to the getter is empty-string. That should mean the getter is defined
            // in the subclass
       {
-        throw new Exception("Feeds Aggregator - Couldn't get the method $methodName. (1)");
+        throw new Exception("Feeds Aggregator - $methodName is not in the directGetters array.");
       }
     }
     else
