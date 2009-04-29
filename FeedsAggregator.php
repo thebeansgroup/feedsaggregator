@@ -45,10 +45,18 @@ class FeedsAggregator
             break;
           }
 
-          $feedConverter = FeedConverter::getInstance($itemArrayFromFeed, $this->mainClassName, $feed->getConverterName());
-  
-          $modelMapper = ModelMapper::getInstance($feedConverter, $this->mainClassName);
-          $modelMapper->doMapping($feed->getId());
+          try
+          {
+            $feedConverter = FeedConverter::getInstance($itemArrayFromFeed, $this->mainClassName, $feed->getConverterName());
+    
+            $modelMapper = ModelMapper::getInstance($feedConverter, $this->mainClassName);
+            $modelMapper->doMapping($feed->getId());
+          }
+          catch (Exception $e)
+          {
+            self::reportError("Error during converting and mapping the feed with id {$feed->getId()} \n\n" . $e);
+            continue;
+          }
         }
         $feed->refreshTimestamp();
         $feed->save();
