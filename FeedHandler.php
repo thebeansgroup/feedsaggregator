@@ -10,7 +10,7 @@ abstract class FeedHandler
   abstract protected function getItemTag();
   abstract protected function getElementsArray();
   abstract protected function getExtraElements();
-  abstract protected function getOptionalElements();
+  abstract protected function getOptionalElementsArray();
 
   public function __construct(ParsableFeed $feed)
   {
@@ -106,10 +106,20 @@ abstract class FeedHandler
     {
       if (trim($value) == '')
       {
-        if (!in_array($element, $this->getOptionalElements())) // the item is NOT optional
+        if (!in_array($element, $this->getOptionalElementsArray())) // the item is NOT optional
         {
           throw new Exception("The mandatory element $element is empty in the feed {$this->feedFilepath} for the item with this details " .  print_r($item, true));
         }
+      }
+    }
+
+    // check whether some mandatory element are missing in the item coming fron the feed
+    $mandatoryFieldsArray = array_diff($this->getElementsArray(), $this->getOptionalElementsArray());
+    foreach ($mandatoryFieldsArray as $mandatoryField)
+    {
+      if (!array_key_exists($mandatoryField, $item))
+      {
+          throw new Exception("The mandatory field $mandatoryField is missing in the feed {$this->feedFilepath} for the item with this details " .  print_r($item, true));
       }
     }
 

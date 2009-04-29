@@ -12,6 +12,7 @@ abstract class FeedConverter
   }
 
   abstract protected function setRequiredGetters();
+  abstract protected function getDirectGetters();
 
   public static function getInstance($itemArrayFromFeed, $mainClassName, $feedUniqueIdentifier)
   {
