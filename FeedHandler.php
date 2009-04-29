@@ -9,7 +9,7 @@ abstract class FeedHandler
 
   abstract protected function getItemTag();
   abstract protected function getElementsArray();
-  abstract protected function getExtraElements();
+  abstract protected function getExtraElementsArray();
   abstract protected function getOptionalElementsArray();
 
   public function __construct(ParsableFeed $feed)
@@ -132,7 +132,7 @@ abstract class FeedHandler
       }
     }
 
-    $item = array_merge($item, $this->getExtraElements());
+    $item = array_merge($item, $this->getExtraElementsArray());
     foreach($item as $elementName => $elementValue)
     {
       $item[$elementName] = $this->generalFilter($elementValue);
