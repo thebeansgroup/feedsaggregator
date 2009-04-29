@@ -119,7 +119,16 @@ abstract class FeedHandler
     {
       if (!array_key_exists($mandatoryField, $item))
       {
-          throw new Exception("The mandatory field $mandatoryField is missing in the feed {$this->feedFilepath} for the item with this details " .  print_r($item, true));
+        throw new Exception("The mandatory field $mandatoryField is missing in the feed {$this->feedFilepath} for the item with this details " .  print_r($item, true));
+      }
+    }
+
+    // check every field is UTF8
+    foreach($item as $element => $value)
+    {
+      if (!self::isValidUTF8($value))
+      {
+        throw new Exception("The element $element in the feed {$this->feedFilepath} is NOT UTF8 for the item with this details " .  print_r($item, true));
       }
     }
 
@@ -245,4 +254,81 @@ abstract class FeedHandler
     
     return FALSE;
   }
+
+    /**
+     * Makes sure that input is valid UTF8. If not, it converts it to
+     * UTF8.
+     * 
+     * @param string $data The input to validate
+     */
+    public static function validateUTF8(&$data)
+    {
+        if (!self::isValidUTF8($data))
+            $data = utf8_encode($data);
+    }
+
+    /**
+     * Returns whether the input is valid UTF8.
+     *
+     * @param mixed $data The input to test
+     * @return bool
+     */
+    private static function isValidUTF8(&$data)
+    {
+    	// we only need to validate string values and arrays potentially containing
+    	// string values
+    	if (!is_string($data) && !is_array($data))
+    		return true;
+    		
+        static $utf8Validator;
+        
+        if (!isset($utf8Validator))
+            $utf8Validator = self::getValidUTF8Expression();
+        
+        // if the $data is actually an array, make sure to 
+        if (is_array($data))
+        {
+        	foreach ($data as $k => $v)
+        	{
+        		if (!preg_match("!{$utf8Validator}!", $v))
+        			return false;
+        	}
+        	
+        	return true;
+
+        }
+        else	// if the value is a string, just return the results of the test           
+        	return preg_match("!{$utf8Validator}!", $data) ? 0 : 1;
+    }
+
+    /**
+     * Returns a regular expression that can be used to test whether
+     * input is valid UTF8. 
+     *
+     * This could just be a very ugly single-line
+     * class variable, but putting it in a method, and treating it as
+     * a singleton in the invoking method (isValidUTF8) keeps it neat 
+     * and doesn't cost too much.
+     *
+     * @return string The regular expression
+     */
+    private static function getValidUTF8Expression()
+    {
+        $utf8Validator = '[\xC0-\xDF]([^\x80-\xBF]|$)';
+        $utf8Validator .= '|[\xE0-\xEF].{0,1}([^\x80-\xBF]|$)';
+        $utf8Validator .= '|[\xF0-\xF7].{0,2}([^\x80-\xBF]|$)';
+        $utf8Validator .= '|[\xF8-\xFB].{0,3}([^\x80-\xBF]|$)';
+        $utf8Validator .= '|[\xFC-\xFD].{0,4}([^\x80-\xBF]|$)';
+        $utf8Validator .= '|[\xFE-\xFE].{0,5}([^\x80-\xBF]|$)';
+        $utf8Validator .= '|[\x00-\x7F][\x80-\xBF]';
+        $utf8Validator .= '|[\xC0-\xDF].[\x80-\xBF]';
+        $utf8Validator .= '|[\xE0-\xEF]..[\x80-\xBF]';
+        $utf8Validator .= '|[\xF0-\xF7]...[\x80-\xBF]';
+        $utf8Validator .= '|[\xF8-\xFB]....[\x80-\xBF]';
+        $utf8Validator .= '|[\xFC-\xFD].....[\x80-\xBF]';
+        $utf8Validator .= '|[\xFE-\xFE]......[\x80-\xBF]';
+        $utf8Validator .= '|^[\x80-\xBF]';
+        
+        return $utf8Validator;
+    }
 }
