@@ -26,7 +26,7 @@ abstract class FeedHandler
 
   public static function getInstance(ParsableFeed $feed)
   {
-    $feedName = $feed->getName();
+    $feedName = $feed->getHandlerName();
     if (! $feedName)
     {
       throw new Exception("Feeds Aggregator - Couldn't retrieve the name for the feed {$feed->getUrl()}");
