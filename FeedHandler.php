@@ -152,7 +152,10 @@ abstract class FeedHandler
 
   public function deleteFeed()
   {
-    unlink($this->feedFilepath);
+    if (is_file($this->feedFilepath))
+    {
+      unlink($this->feedFilepath);
+    }
   }
 
   public function setItemArray($itemArray)

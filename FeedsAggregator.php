@@ -50,15 +50,17 @@ class FeedsAggregator
           $modelMapper = ModelMapper::getInstance($feedConverter, $this->mainClassName);
           $modelMapper->doMapping($feed->getId());
         }
-        $feedHandler->closeFeed();
-        $feedHandler->deleteFeed();
-  
         $feed->refreshTimestamp();
         $feed->save();
       }
       catch(Exception $e)
       {
-        self::reportError("Error parsing the feed with id {$feed->getHandlerIdentifier()} \n\n" . $e);
+        self::reportError("Error parsing the feed with id {$feed->getHandlerName()} \n\n" . $e);
+      }
+      if (is_object($feedHandler))
+      {
+        $feedHandler->closeFeed();
+        $feedHandler->deleteFeed();
       }
     }
     FeedsAggregator::reportError('', true, $this->environment);
