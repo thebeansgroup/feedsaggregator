@@ -2,6 +2,8 @@
 
 class FeedsAggregator
 {
+  const NUMBER_OF_ERROR_MESSAGES_BEFORE_SENDING_NOTIFICATION = 100;
+
   private $feeds;
   private $mainClassName;
   private $environment;
@@ -66,6 +68,15 @@ class FeedsAggregator
   public static function reportError($msg = '', $flush = false, $environment = '')
   {
     static $str;
+    static $counter = 0;
+
+    if ($counter == self::NUMBER_OF_ERROR_MESSAGES_BEFORE_SENDING_NOTIFICATION)
+    {
+      $flush = true;
+      $counter = 0;
+      $str = '';
+    }
+
     if ($msg)
     {
       $str .= $msg . "\n\n\n||||||||||||||||||| END ERROR MESSAGE ||||||||||||||||||\n\n\n        ";
@@ -75,6 +86,7 @@ class FeedsAggregator
       mail('developers@studentbeans.com', "Feeds Aggregator error - {$_SERVER['HTTP_HOST']} - " . $environment, $str);
       echo $str;
     }
+    $counter++;
     return $str;
   }
 }
