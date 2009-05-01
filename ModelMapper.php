@@ -29,7 +29,7 @@ abstract class ModelMapper
       $this->refreshItem($oldItem);
       $isItemToInsert = false;
     }
-    if ($this->itemDataAlreadyExists())
+    else if($this->itemDataAlreadyExists())
     {
       $isItemToInsert = false;
     }
