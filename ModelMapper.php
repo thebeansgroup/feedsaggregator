@@ -16,16 +16,9 @@ abstract class ModelMapper
 
   public static function getInstance($feedConverter, $mainClassName)
   {
-    static $instance;
-    
     $className = $mainClassName . 'ModelMapper';
     
-    if (!is_object($instance) || !($instance instanceof $className))
-    {
-      $instance = new $className($feedConverter, $mainClassName);
-    }
-    
-    return $instance;
+    return new $className($feedConverter, $mainClassName);
   }
 
   public function doMapping($feedId)
