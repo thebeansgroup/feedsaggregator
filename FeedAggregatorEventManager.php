@@ -15,7 +15,10 @@ abstract class FeedAggregatorEventManager
 
   public static function fire($eventName)
   {
-    call_user_func(self::$eventsTable[$eventName]);
+    if (isset(self::$eventsTable[$eventName]))
+    {
+      call_user_func(self::$eventsTable[$eventName]);
+    }
   }
 
   public static function clearEvents()
