@@ -17,6 +17,11 @@ class FeedsAggregator
 
   public function aggregate()
   {
+    $feedAggregatorConfig = FeedAggregatorConfig::getInstance($this->mainClassName);
+    $feedAggregatorConfig->registerEvents();
+
+    FeedAggregatorEventManager::fire(FeedAggregatorEventManager::START_AGGREGATION);
+
     set_time_limit(0);
 
     foreach ($this->feeds as $feed)
@@ -73,6 +78,8 @@ class FeedsAggregator
     }
     FeedsAggregator::reportError('', true, $this->environment);
     echo "<br /><br /><br />Aggregation completed.<br /><br /><br />";
+    FeedAggregatorEventManager::fire(FeedAggregatorEventManager::END_AGGREGATION);
+    FeedAggregatorEventManager::clearEvents();
   }
 
   public static function reportError($msg = '', $flush = false, $environment = '')
