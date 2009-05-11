@@ -17,10 +17,24 @@ class FeedsAggregator
 
   public function aggregate()
   {
-    $feedAggregatorConfig = FeedAggregatorConfig::getInstance($this->mainClassName);
-    $feedAggregatorConfig->registerEvents();
+    try
+    {
+      $feedAggregatorConfig = FeedsAggregatorConfig::getInstance($this->mainClassName);
+      $feedAggregatorConfig->registerEvents();
+    }
+    catch(Exception $e)
+    {
+      self::reportError("Error aggregating \n\n" . $e);
+    }
 
-    FeedAggregatorEventManager::fire(FeedAggregatorEventManager::START_AGGREGATION);
+    try
+    {
+      FeedsAggregatorEventManager::fire(FeedsAggregatorEventManager::START_AGGREGATION);
+    }
+    catch(Exception $e)
+    {
+      self::reportError("Error aggregating \n\n" . $e);
+    }
 
     set_time_limit(0);
 
@@ -78,8 +92,15 @@ class FeedsAggregator
     }
     FeedsAggregator::reportError('', true, $this->environment);
     echo "<br /><br /><br />Aggregation completed.<br /><br /><br />";
-    FeedAggregatorEventManager::fire(FeedAggregatorEventManager::END_AGGREGATION);
-    FeedAggregatorEventManager::clearEvents();
+    try
+    {
+      FeedsAggregatorEventManager::fire(FeedsAggregatorEventManager::END_AGGREGATION);
+    }
+    catch(Exception $e)
+    {
+      self::reportError("Error aggregating \n\n" . $e);
+    }
+    FeedsAggregatorEventManager::clearEvents();
   }
 
   public static function reportError($msg = '', $flush = false, $environment = '')

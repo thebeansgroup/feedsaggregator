@@ -1,10 +1,10 @@
 <?php
 
-abstract class FeedAggregatorConfig
+abstract class FeedsAggregatorConfig
 {
   public static function getInstance($mainClassName)
   {
-    $classname = $mainClassName . "FeedAggregatorConfig";
+    $classname = $mainClassName . __CLASS__;
     return new $classname();
   }
 
