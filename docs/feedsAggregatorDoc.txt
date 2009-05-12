@@ -1,0 +1,71 @@
+=Feeds aggregator=
+
+Here the steps to use the Feeds Aggragator:
+
+1) Create the table for your feeds [see other projects] 
+
+syb_feed:
+  id: ~
+  handler_name: { type: varchar(32), required: true }
+  converter_name: { type: varchar(32), required: true }
+  url: { type: varchar(255) }
+  type: { type: varchar(3), default: XML, required: true }
+  compression_type: { type: varchar(4) }
+  active: { type: boolean, default: 1 }
+  last_parsed_at: { type: timestamp }
+
+or, using an XML schema:
+
+CREATE TABLE IF NOT EXISTS `gb_feed` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` varchar(32) collate utf8_unicode_ci NOT NULL,
+  `url` varchar(255) collate utf8_unicode_ci NOT NULL,
+  `type` enum('XML','CVS') collate utf8_unicode_ci NOT NULL default 'XML',
+  `is_compressed` tinyint(4) NOT NULL default '0',
+  `compression_type` enum('gzip','zip','tar') collate utf8_unicode_ci default NULL,
+  `number_of_views` int(11) default NULL,
+  `advertiser_id` int(11) NOT NULL,
+  `priority` tinyint(4) NOT NULL,
+  `is_active` tinyint(4) NOT NULL default '1',
+  `last_parsed_at` datetime default NULL,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `gb_feed_U_1` (`name`),
+  UNIQUE KEY `gb_feed_U_2` (`priority`),
+  KEY `gb_feed_FI_1` (`advertiser_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+2) make sure the Propel class Feed implements the interface ParsableFeed
+
+3) create a new symfony app called 'feedsaggregator' with a module called 'aggregate': 
+
+./symfony generate:app feedsaggregator
+./symfony generate:module feedsaggregator aggregator
+
+4) The 'aggregate' module's executeAggregate action will contain code similar to this one: 
+
+public function executeAggregate(sfWebRequest $request)
+{
+  $c = new Criteria();
+  $c->add(GbFeedPeer::IS_ACTIVE, 1, Criteria::EQUAL);
+  $c->addAscendingOrderByColumn(GbFeedPeer::PRIORITY);
+  $feeds = GbFeedPeer::doSelect($c);
+
+  $mainClassName = "GbJob";
+  $fa = new FeedsAggregator($feeds, $mainClassName, SfConfig::get('sf_environment'));
+  $fa->aggregate();
+
+  $luceneIndex = GbJobPeer::getLuceneIndex();
+  $luceneIndex->optimize();
+}
+
+5) Decide the fields you would like as input for your ModelMapper
+
+6) Once: Create your class XXXXFeedConverter [see other projects]
+
+7) Once: Create your class XXXXModelMapper [see other projects]
+
+8) Once: Create your class XXXXFeedsAggregatorConfig [see other projects]
+
+9) For each feed: create the class FeedHandler_YYYY [see other projects]
+
+10) For each feed: create the class XXXXFeedConverter_YYYY [see other projects] 
