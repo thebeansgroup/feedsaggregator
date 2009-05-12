@@ -77,6 +77,7 @@ class FeedsAggregator
 
     foreach ($this->feeds as $feed)
     {
+      $processingStartTime = time();
       try
       {
         $feedHandler = FeedHandler::getInstance($feed);
@@ -126,6 +127,7 @@ class FeedsAggregator
         $feedHandler->closeFeed();
         $feedHandler->deleteFeed();
       }
+      $feed->recordProcessingTime(time() - $processingStartTime);
     }
     FeedsAggregator::reportError('', true, $this->environment);
     echo "<br /><br /><br />Aggregation completed.<br /><br /><br />";

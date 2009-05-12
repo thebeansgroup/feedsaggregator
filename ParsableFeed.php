@@ -43,7 +43,14 @@ interface ParsableFeed
   public function getCompressionType();
   
   /**
-   * Refresh the timestamp of the feed to show when it was last parsed
+   * Refreshes the timestamp of the feed to show when it was last parsed
    */
   public function refreshTimestamp();
+  
+  /**
+   * Records the number of seconds the system has taken to process the feed 
+   * 
+   * @param integer $seconds
+   */
+  public function recordProcessingTime($seconds);  
 }
