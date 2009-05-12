@@ -1,15 +1,31 @@
 <?php
 
+/**
+ * Parses feeds in XML format (suitable also for RSS feeds).
+ *
+ * @package    lib.feedsaggregator
+ */
 class XMLFeedParser extends FeedParser
 {
+  /**
+   * @var XMLReader
+   */
   private $parser;
-  private $itemContent;
 
+  /**
+   * Constructor
+   */
   public function __construct()
   {
     $this->parser = new XMLReader();
   }
 
+  /**
+   * Opens the feed
+   * 
+   * @abstract
+   * @param string $filepath
+   */
   public function open($filepath)
   {
     if (!$this->parser->open($filepath))
@@ -18,11 +34,22 @@ class XMLFeedParser extends FeedParser
     }
   }
 
+  /**
+   * Closes the feed
+   * 
+   * @abstract
+   */  
   public function close()
   {
     $this->parser->close();
   }
 
+  /**
+   * @abstract
+   * @param string $itemTag the tag name that wraps the item in the feed
+   * @param array $elementsArray a list of *all* the tags an item can have
+   * @return associative array all the elements the next item in the feed has 
+   */  
   public function parseNextItem($itemTag, $elementsArray)
   {
       while($this->parser->read())
@@ -38,6 +65,12 @@ class XMLFeedParser extends FeedParser
       }
   }
 
+  /**
+   * @access private
+   * @param string $xml
+   * @param array $elementsArray
+   * @return associative array with all of the elements for the item 
+   */
   private function parseInnerElements($xml, $elementsArray)
   {
     $values = array();

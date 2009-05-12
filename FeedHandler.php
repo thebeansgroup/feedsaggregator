@@ -1,17 +1,58 @@
 <?php
 
+/**
+ * Parent class for doing basic transformations on the fields in the feed.
+ *
+ * @package    lib.feedsaggregator
+ */
 abstract class FeedHandler
 {
+  /**
+   * @var ParsableFeed
+   */
   protected $feed;
+  /**
+   * @var string 
+   */
   protected $feedFilepath;
+  /**
+   * @var FeedParser 
+   */
   protected $feedParser;
+  /**
+   * Contains all the fields from an item of the feed
+   * 
+   * @var array 
+   */
   protected $itemArray;
 
+  /**
+   * @abstract
+   * @return string the tag that wraps the item in the feed (typically the child of the root)
+   */
   abstract protected function getItemTag();
+  /**
+   * @abstract
+   * @return array *all* the tags desciribing an item in the feed. Some items may not have some of these elements
+   */
   abstract protected function getElementsArray();
+  /**
+   * @abstract
+   * @return associative array potential elements we want to 'artificailly' add to every item in the feed
+   */
   abstract protected function getExtraElementsArray();
+  /**
+   * @abstract
+   * @return array the list of all the elements that an item in the feed is allowed not to have (optional elements) 
+   */
   abstract protected function getOptionalElementsArray();
 
+  /**
+   * Constructor
+   * 
+   * @param ParsableFeed $feed
+   * @return unknown_type
+   */
   public function __construct(ParsableFeed $feed)
   {
     $this->feed = $feed;
@@ -24,6 +65,10 @@ abstract class FeedHandler
     $this->feedParser = new $feedParserClassname();
   }
 
+  /**
+   * @param ParsableFeed $feed
+   * @return FeedHandler child specific for a particular feed
+   */
   public static function getInstance(ParsableFeed $feed)
   {
     $feedName = $feed->getHandlerName();
@@ -39,6 +84,9 @@ abstract class FeedHandler
     return new $classname($feed);
   }
 
+  /**
+   * Downloads the feed and store it temporary in the /tmp directory
+   */
   public function downloadFeed()
   {
     $feedUrl = $this->feed->getUrl();
@@ -89,11 +137,19 @@ abstract class FeedHandler
     $this->feedFilepath = $outputFilepath;
   }
 
+  /**
+   * Opens the feed
+   */
   public function openFeed()
   {
     $this->feedParser->open($this->feedFilepath);
   }
 
+  /**
+   * Provides the next parsed item after having sanitized it and checked it against missing mandatory fields
+   * 
+   * @return array|boolean - the item in an associative array or false when there are no more items to retrieve
+   */
   public function getNextItem()
   {
     $item = $this->feedParser->parseNextItem($this->getItemTag(), $this->getElementsArray());
@@ -148,17 +204,29 @@ abstract class FeedHandler
     return $item;
   }
 
+  /**
+   * A filter suitable for every element inside the tags of an item
+   * 
+   * @param string $value the string to filter
+   * @return string filtered string
+   */
   protected function generalFilter($value)
   {
     $value = trim($value);
     return $this->html_entity_decode_utf8($value);
   }
 
+  /**
+   * Closes the feed
+   */
   public function closeFeed()
   {
     $this->feedParser->close();
   }
 
+  /**
+   * Deletes the feed from the hard disk
+   */
   public function deleteFeed()
   {
     if (is_file($this->feedFilepath))
@@ -167,17 +235,33 @@ abstract class FeedHandler
     }
   }
 
+  /**
+   * A setter for the $itemArray
+   * 
+   * @param array $itemArray
+   */
   public function setItemArray($itemArray)
   {
     $this->itemArray = $itemArray;
   }
 
+  /**
+   * @param string $elementName
+   * @return string the filter method name built according the element name
+   */
   private function getFilterMethodName($elementName)
   {
     $elementName = preg_replace('/_([a-z])/e', "strtoupper('$1')", $elementName);
     return 'filter' . ucfirst($elementName);
   }
 
+  /**
+   * A html_entity_decode function working with UTF8 characters
+   * 
+   * @access protected
+   * @param string $string the string to decode
+   * @return string
+   */
   protected function html_entity_decode_utf8($string)
   {
     static $trans_tbl;
@@ -200,6 +284,13 @@ abstract class FeedHandler
     return strtr($string, $trans_tbl);
   }
 
+  /**
+   * Converts a Unicode character index to UTF-8 multi-byte encoding 
+   * 
+   * @access protected
+   * @param integer $number character index
+   * @return string|boolean UTF-8 representation, false if an error arises.
+   */
   protected function code2utf($number)
   {
     if ($number < 0)

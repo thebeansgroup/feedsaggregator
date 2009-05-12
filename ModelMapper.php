@@ -1,12 +1,34 @@
 <?php
 
+/**
+ * This class is in charge to store in the datastore the elements coming from the feed
+ * (after they have been processed by the FeedHandler and FeedConverter)
+ *
+ * @abstract
+ * @package    lib.feedsaggregator
+ */
 abstract class ModelMapper
 {
+  /**
+   * @var FeedConverter
+   */
   protected $feedConverter;
+  /**
+   * @var Propel Connection
+   */
   protected $dbConnection;
+  /**
+   * @var string
+   */
   protected $mainClassName;
 
-  public function __construct($feedConverter, $mainClassName)
+  /**
+   * Constructor
+   * 
+   * @param FeedConverter $feedConverter
+   * @param string $mainClassName
+   */
+  public function __construct(FeedConverter $feedConverter, $mainClassName)
   {
     $this->mainClassName = $mainClassName;
     $this->feedConverter = $feedConverter;
@@ -14,13 +36,22 @@ abstract class ModelMapper
     $this->dbConnection = Propel::getConnection(constant($peerClassName . '::DATABASE_NAME'), Propel::CONNECTION_WRITE);
   }
 
-  public static function getInstance($feedConverter, $mainClassName)
+  /**
+   * @param FeedConverter $feedConverter
+   * @param string $mainClassName
+   * @return ModelMapper a suitable child class
+   */
+  public static function getInstance(FeedConverter $feedConverter, $mainClassName)
   {
     $className = $mainClassName . 'ModelMapper';
     
     return new $className($feedConverter, $mainClassName);
   }
 
+  /**
+   * It does the actual mapping of the items coming from the feed to the datastore 
+   * @param integer $feedId
+   */
   public function doMapping($feedId)
   {
     $isDatabaseTransactionEnabled = true;
@@ -68,14 +99,29 @@ abstract class ModelMapper
   }
 
  /**
+  * @abstract
   * @return boolean|object - false if the item is not in the database yet, the object already
   *                          in the database otherwise
   */
   abstract public function getItemFromDataStore();
-  abstract public function refreshItem($item);
+  
  /**
+  * @abstract
+  * @param object $item - the item to refresh the 'last-parsed' timestamp of
+  */
+  abstract public function refreshItem($item);
+  
+ /**
+  * @abstract
   * @return boolean - true if we have already that item from any other feed, false otherwise
   */
   abstract public function itemDataAlreadyExists();
+  
+ /**
+  * Inserts the item in the datastore
+  * 
+  * @abstract
+  * @param integer $feedId
+  */
   abstract public function insertItem($feedId);
 }
