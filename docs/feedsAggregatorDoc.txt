@@ -68,4 +68,5 @@ public function executeAggregate(sfWebRequest $request)
 
 9) For each feed: create the class FeedHandler_YYYY [see other projects]
 
-10) For each feed: create the class XXXXFeedConverter_YYYY [see other projects] 
+10) For each feed: create the class XXXXFeedConverter_YYYY [see other projects]
+To see which methods you need to provide in this class, have a look to XXXXFeedConverter
