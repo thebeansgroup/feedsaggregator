@@ -51,7 +51,6 @@ abstract class FeedHandler
    * Constructor
    * 
    * @param ParsableFeed $feed
-   * @return unknown_type
    */
   public function __construct(ParsableFeed $feed)
   {
