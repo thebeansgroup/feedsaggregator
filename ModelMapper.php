@@ -49,7 +49,8 @@ abstract class ModelMapper
   }
 
   /**
-   * It does the actual mapping of the items coming from the feed to the datastore 
+   * It does the actual mapping of the items coming from the feed to the datastore
+   *
    * @param integer $feedId
    */
   public function doMapping($feedId)
@@ -99,6 +100,8 @@ abstract class ModelMapper
   }
 
  /**
+  * Checks whether the item is already in the datastore
+  *
   * @abstract
   * @return boolean|object - false if the item is not in the database yet, the object already
   *                          in the database otherwise
@@ -106,12 +109,16 @@ abstract class ModelMapper
   abstract public function getItemFromDataStore();
   
  /**
+  * Refreshes the 'last-parsed' timestamp of the item
+  *
   * @abstract
   * @param object $item - the item to refresh the 'last-parsed' timestamp of
   */
   abstract public function refreshItem($item);
   
  /**
+  * Checks whether there is already an item with the same data in the datastore
+  *
   * @abstract
   * @return boolean - true if we have already that item from any other feed, false otherwise
   */

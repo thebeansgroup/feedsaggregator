@@ -7,6 +7,14 @@
  */
 abstract class FeedTextFilter
 {
+
+  /**
+   * A html_entity_decode function working with UTF8 characters
+   * 
+   * @access protected
+   * @param string $string the string to decode
+   * @return string
+   */
   public static function html_entity_decode_utf8($string)
   {
     static $trans_tbl;

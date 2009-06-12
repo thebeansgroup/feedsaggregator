@@ -8,37 +8,51 @@
 interface ParsableFeed
 {
   /**
-   * @return string the identifier for the FeedHandler class
+   * Returns the identifier for the FeedHandler class
+   *
+   * @return string
    */
   public function getHandlerName();
   
   /**
-   * @return string the identifier for the FeedHandler class
+   * Returns the identifier for the FeedHandler class
+   *
+   * @return string
    */
   public function getConverterName();
   
   /**
-   * @return integer the id of the row in the table describing the feed
+   * Returns the id of the row in the table describing the feed
+   * 
+   * @return integer
    */
   public function getID();
   
   /**
-   * @return string the URL of the feed
+   * Returns the URL of the feed
+   *
+   * @return string
    */
   public function getUrl();
   
   /**
+   * Returns whether the feed is active and available for parsing
+   *
    * @return boolean whether the feed is active and available for parsing
    */
   public function isActive();
   
   /**
-   * @return boolean whether the feed is compressed
+   * Returns whether the feed is compressed
+   *
+   * @return boolean
    */
   public function isCompressed();
   
   /**
-   * @return string the compression type
+   * Returns the compression type
+   *
+   * @return string
    */
   public function getCompressionType();
   

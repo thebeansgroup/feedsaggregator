@@ -45,10 +45,12 @@ class XMLFeedParser extends FeedParser
   }
 
   /**
+   * Returns an associative array all the elements the next item in the feed has
+   *
    * @abstract
    * @param string $itemTag the tag name that wraps the item in the feed
    * @param array $elementsArray a list of *all* the tags an item can have
-   * @return associative array all the elements the next item in the feed has 
+   * @return associative array 
    */  
   public function parseNextItem($itemTag, $elementsArray)
   {
@@ -66,10 +68,12 @@ class XMLFeedParser extends FeedParser
   }
 
   /**
+   * Returns an associative array with all of the elements for the item
+   *
    * @access private
    * @param string $xml
    * @param array $elementsArray
-   * @return associative array with all of the elements for the item 
+   * @return associative array
    */
   private function parseInnerElements($xml, $elementsArray)
   {

@@ -245,20 +245,14 @@ abstract class FeedHandler
   }
 
   /**
+   * Returns the filter method name built according the element name
+   *
    * @param string $elementName
-   * @return string the filter method name built according the element name
+   * @return string
    */
   private function getFilterMethodName($elementName)
   {
     $elementName = preg_replace('/_([a-z])/e', "strtoupper('$1')", $elementName);
     return 'filter' . ucfirst($elementName);
   }
-
-  /**
-   * A html_entity_decode function working with UTF8 characters
-   * 
-   * @access protected
-   * @param string $string the string to decode
-   * @return string
-   */
 }

@@ -82,9 +82,10 @@ abstract class FeedsAggregatorEventManager
 
   
   /**
+   * Returns whether the eventName input exists
    * @access private
    * @param string $eventName
-   * @return boolean whether the eventName input exists
+   * @return boolean 
    */
   private static function eventExists($eventName)
   {
