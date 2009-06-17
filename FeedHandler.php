@@ -68,7 +68,7 @@ abstract class FeedHandler
    * @param array $itemArrayFromFeed - the array representing a raw item from the feed
    * @return boolean
    */
-  abstract public function discardItem($itemArrayFromFeed);
+  abstract public function discardItem(array $itemArrayFromFeed);
 
   /**
    * Constructor
