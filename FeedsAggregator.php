@@ -81,7 +81,6 @@ class FeedsAggregator
       try
       {
         $feedHandler = FeedHandler::getInstance($feed);
-  
         $feedHandler->downloadFeed();
         $feedHandler->openFeed();
 
@@ -90,6 +89,10 @@ class FeedsAggregator
           try
           {
             $itemArrayFromFeed = $feedHandler->getNextItem();
+            if ($feedHandler->discardItem($itemArrayFromFeed))
+            {
+              continue;
+            }
           }
           catch (Exception $e)
           {

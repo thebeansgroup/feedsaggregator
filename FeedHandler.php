@@ -27,25 +27,48 @@ abstract class FeedHandler
   protected $itemArray;
 
   /**
+   * Returns the tag that wraps the item in the feed (typically the child of the root)
+   *
    * @abstract
-   * @return string the tag that wraps the item in the feed (typically the child of the root)
+   * @return string
    */
   abstract protected function getItemTag();
+
   /**
+   * Returns *all* the tags desciribing an item in the feed. 
+   * Some items may not have some of these elements
+   *
    * @abstract
-   * @return array *all* the tags desciribing an item in the feed. Some items may not have some of these elements
+   * @return array
    */
   abstract protected function getElementsArray();
+
   /**
+   * Returns the potential elements we want to 'artificailly' add to every item in the feed
+   *
    * @abstract
-   * @return associative array potential elements we want to 'artificailly' add to every item in the feed
+   * @return associative array
    */
   abstract protected function getExtraElementsArray();
+
   /**
+   * Returns the list of all the elements that an item in the feed is allowed 
+   * not to have (optional elements)
+   *
    * @abstract
-   * @return array the list of all the elements that an item in the feed is allowed not to have (optional elements) 
+   * @return array
    */
   abstract protected function getOptionalElementsArray();
+
+  /**
+   * Returns whether we want to discard an item from our aggregation because not
+   * relevant to our purpose (it is a good way to do an initial filtering)
+   *
+   * @abstract
+   * @param array $itemArrayFromFeed - the array representing a raw item from the feed
+   * @return boolean
+   */
+  abstract public function discardItem($itemArrayFromFeed);
 
   /**
    * Constructor
@@ -106,13 +129,13 @@ abstract class FeedHandler
       $passwordOption = "--password=" . $this->feed->getPassword();
     }
 
-    error_log("wget $usernameOption $passwordOption --output-document=$outputFilepath '$feedUrl'");
-
     exec("wget $usernameOption $passwordOption --output-document=$outputFilepath '$feedUrl'");
+
     exec("chmod 775 $outputFilepath");
 
     if (!filesize($outputFilepath))
     {
+
       throw new Exception("Feeds Aggregator - Couldn't download the feed {$this->feed->getId()}");
     }
 
