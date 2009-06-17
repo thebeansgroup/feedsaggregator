@@ -94,7 +94,21 @@ abstract class FeedHandler
       throw new Exception("Feeds Aggregator - Couldn't retrieve the URL for the feed {$this->feed->getId()}");
     }
     $outputFilepath = '/tmp/jobs-' . rand() . '-' . time();
-    exec("wget --output-document=$outputFilepath '$feedUrl'");
+
+    $usernameOption = '';
+    if ($this->feed->getUsername())
+    {
+      $usernameOption = "--user=" . $this->feed->getUsername();
+    }
+    $passwordOption = '';
+    if ($this->feed->getPassword())
+    {
+      $passwordOption = "--password=" . $this->feed->getPassword();
+    }
+
+    error_log("wget $usernameOption $passwordOption --output-document=$outputFilepath '$feedUrl'");
+
+    exec("wget $usernameOption $passwordOption --output-document=$outputFilepath '$feedUrl'");
     exec("chmod 775 $outputFilepath");
 
     if (!filesize($outputFilepath))

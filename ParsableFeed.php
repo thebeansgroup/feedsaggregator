@@ -29,6 +29,20 @@ interface ParsableFeed
   public function getID();
   
   /**
+   * Returns the username for the authentication to access the feed
+   *
+   * @return string
+   */
+  public function getUsername();
+
+  /**
+   * Returns the password for the authentication to access the feed
+   *
+   * @return string
+   */
+  public function getPassword();
+
+  /**
    * Returns the URL of the feed
    *
    * @return string
