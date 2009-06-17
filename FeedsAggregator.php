@@ -83,16 +83,11 @@ class FeedsAggregator
         $feedHandler = FeedHandler::getInstance($feed);
         $feedHandler->downloadFeed();
         $feedHandler->openFeed();
-
         while (true)
         {
           try
           {
             $itemArrayFromFeed = $feedHandler->getNextItem();
-            if ($feedHandler->discardItem($itemArrayFromFeed))
-            {
-              continue;
-            }
           }
           catch (Exception $e)
           {
@@ -105,10 +100,14 @@ class FeedsAggregator
             break;
           }
 
+          if ($feedHandler->discardItem($itemArrayFromFeed))
+          {
+            continue;
+          }
+
           try
           {
             $feedConverter = FeedConverter::getInstance($itemArrayFromFeed, $this->mainClassName, $feed->getConverterName());
-    
             $modelMapper = ModelMapper::getInstance($feedConverter, $this->mainClassName);
             $modelMapper->doMapping($feed->getId());
           }
