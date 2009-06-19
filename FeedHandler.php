@@ -249,6 +249,7 @@ abstract class FeedHandler
   protected function generalFilter($value)
   {
     $value = trim($value);
+    $value = strip_tags($value);
     return FeedTextFilter::html_entity_decode_utf8($value);
   }
 
