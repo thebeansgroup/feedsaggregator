@@ -1,5 +1,8 @@
 =Feeds aggregator=
 
+This feeds Aggregator can work with XML and RSS feeds, even protected by authentication.
+It is easily entendible to work also with CVS feeds.
+
 Here the steps to use the Feeds Aggragator:
 
 1) Create the table for your feeds [see other projects] 
