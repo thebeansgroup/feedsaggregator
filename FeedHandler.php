@@ -250,7 +250,9 @@ abstract class FeedHandler
   {
     $value = trim($value);
     $value = strip_tags($value);
-    return FeedTextFilter::html_entity_decode_utf8($value);
+    $value = FeedTextFilter::html_entity_decode_utf8($value);
+    FeedTextFilter::validateUTF8($value);
+    return $value;
   }
 
   /**
