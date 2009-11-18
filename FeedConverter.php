@@ -69,7 +69,7 @@ abstract class FeedConverter
    * @param array $args
    * @return string
    */
-  protected function __call($methodName, $args)
+  public function __call($methodName, $args)
   {
     if (! in_array($methodName, $this->requiredGetters))
     {
