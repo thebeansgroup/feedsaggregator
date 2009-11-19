@@ -75,7 +75,7 @@ abstract class FeedHandler
    * 
    * @param ParsableFeed $feed
    */
-  public function __construct(ParsableFeed $feed)
+  protected function __construct(ParsableFeed $feed)
   {
     $this->feed = $feed;
 
