@@ -12,17 +12,21 @@ abstract class FeedHandler
    */
   protected $feed;
   /**
-   * @var string 
+   * @var string
    */
   protected $feedFilepath;
+    /**
+   * @var string
+   */
+  protected $completeUrl;
   /**
-   * @var FeedParser 
+   * @var FeedParser
    */
   protected $feedParser;
   /**
    * Contains all the fields from an item of the feed
-   * 
-   * @var array 
+   *
+   * @var array
    */
   protected $itemArray;
 
@@ -35,7 +39,7 @@ abstract class FeedHandler
   abstract protected function getItemTag();
 
   /**
-   * Returns *all* the tags desciribing an item in the feed. 
+   * Returns *all* the tags desciribing an item in the feed.
    * Some items may not have some of these elements
    *
    * @abstract
@@ -52,7 +56,7 @@ abstract class FeedHandler
   abstract protected function getExtraElementsArray();
 
   /**
-   * Returns the list of all the elements that an item in the feed is allowed 
+   * Returns the list of all the elements that an item in the feed is allowed
    * not to have (optional elements)
    *
    * @abstract
@@ -72,12 +76,21 @@ abstract class FeedHandler
 
   /**
    * Constructor
-   * 
+   *
    * @param ParsableFeed $feed
    */
   protected function __construct(ParsableFeed $feed)
   {
     $this->feed = $feed;
+
+    if ($this->feed->isDynamicUrl())
+    {
+      $this->completeUrl = $this->getDynamicUrl($this->feed->getUrl());
+    }
+    else
+    {
+      $this->completeUrl = $this->feed->getUrl();
+    }
 
     $feedParserClassname = strtoupper($feed->getType()) . 'FeedParser';
     if (!class_exists($feedParserClassname))
@@ -111,8 +124,7 @@ abstract class FeedHandler
    */
   public function downloadFeed()
   {
-    $feedUrl = $this->feed->getUrl();
-    if (! $feedUrl)
+    if (! $this->completeUrl)
     {
       throw new Exception("Feeds Aggregator - Couldn't retrieve the URL for the feed {$this->feed->getId()}");
     }
@@ -121,15 +133,15 @@ abstract class FeedHandler
     $usernameOption = '';
     if ($this->feed->getUsername())
     {
-      $usernameOption = "--user=" . $this->feed->getUsername();
+      $usernameOption = "--user='" . $this->feed->getUsername() . "'";
     }
     $passwordOption = '';
     if ($this->feed->getPassword())
     {
-      $passwordOption = "--password=" . $this->feed->getPassword();
+      $passwordOption = "--password='" . $this->feed->getPassword() . "'";
     }
 
-    exec("wget $usernameOption $passwordOption --output-document=$outputFilepath '$feedUrl'");
+    exec("wget $usernameOption $passwordOption --output-document=$outputFilepath '$this->completeUrl'");
 
     exec("chmod 775 $outputFilepath");
 
@@ -141,34 +153,34 @@ abstract class FeedHandler
 
     if ($this->feed->isCompressed())
     {
-        switch ($this->feed->getCompressionType())
-        {
-            case 'gzip':
-                // append '.gz' to the file name to keep gunzip happy
-                rename($outputFilepath, $outputFilepath.'.gz');
-                system('/usr/bin/gunzip '.$outputFilepath.'.gz');
-                break;
-            case 'zip':
-                // append '.zip' to the file name to keep unzip happy
-                rename($outputFilepath, $outputFilepath.'.zip');
-                $outputFilepath .= '.zip';
-                $outDir =  dirname($outputFilepath);
-                $zipContents = shell_exec("/usr/bin/unzip -o $outputFilepath -d $outDir | tr -d '\n' | sed -e 's/.*inflating: //'");
-                unlink($outputFilepath);
-                $outputFilepath = $zipContents;
-                break;
-            case 'tar':
-                // append '.tar.gz'
-                rename($outputFilepath, $outputFilepath.'.tar.gz');
-                $output = array();
-                exec('/bin/tar xvzf '.$outputFilepath.'.tar.gz -C '.$this->xpdo->filePath, $output);
-                unlink($fname.'.tar.gz');
-                $outDir =  dirname($outputFilepath);
-                $outputFilepath = $outDir . '/' . $output[0];
-                if (!file_exists($outputFilepath))
-                    FeedsAggregator::reportError("Error untarring file for feed ".$this->feed->getId());
-                break;
-        }
+      switch ($this->feed->getCompressionType())
+      {
+        case 'gzip':
+          // append '.gz' to the file name to keep gunzip happy
+          rename($outputFilepath, $outputFilepath.'.gz');
+          system('/usr/bin/gunzip '.$outputFilepath.'.gz');
+          break;
+        case 'zip':
+          // append '.zip' to the file name to keep unzip happy
+          rename($outputFilepath, $outputFilepath.'.zip');
+          $outputFilepath .= '.zip';
+          $outDir =  dirname($outputFilepath);
+          $zipContents = shell_exec("/usr/bin/unzip -o $outputFilepath -d $outDir | tr -d '\n' | sed -e 's/.*inflating: //'");
+          unlink($outputFilepath);
+          $outputFilepath = $zipContents;
+          break;
+        case 'tar':
+          // append '.tar.gz'
+          rename($outputFilepath, $outputFilepath.'.tar.gz');
+          $output = array();
+          exec('/bin/tar xvzf '.$outputFilepath.'.tar.gz -C '.$this->xpdo->filePath, $output);
+          unlink($fname.'.tar.gz');
+          $outDir =  dirname($outputFilepath);
+          $outputFilepath = $outDir . '/' . $output[0];
+          if (!file_exists($outputFilepath))
+          FeedsAggregator::reportError("Error untarring file for feed ".$this->feed->getId());
+          break;
+      }
     }
     $this->feedFilepath = $outputFilepath;
   }
@@ -183,7 +195,7 @@ abstract class FeedHandler
 
   /**
    * Provides the next parsed item after having sanitized it and checked it against missing mandatory fields
-   * 
+   *
    * @return array|boolean - the item in an associative array or false when there are no more items to retrieve
    */
   public function getNextItem()
@@ -242,7 +254,7 @@ abstract class FeedHandler
 
   /**
    * A filter suitable for every element inside the tags of an item
-   * 
+   *
    * @param string $value the string to filter
    * @return string filtered string
    */
@@ -276,7 +288,7 @@ abstract class FeedHandler
 
   /**
    * A setter for the $itemArray
-   * 
+   *
    * @param array $itemArray
    */
   public function setItemArray($itemArray)
@@ -295,4 +307,9 @@ abstract class FeedHandler
     $elementName = preg_replace('/_([a-z])/e', "strtoupper('$1')", $elementName);
     return 'filter' . ucfirst($elementName);
   }
+
+  /**
+   * Runns before the feed url is used so that the url can be dynamically altered
+   */
+  abstract public function getDynamicUrl($incompleteUrl);
 }
