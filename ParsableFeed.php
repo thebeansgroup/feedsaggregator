@@ -69,6 +69,13 @@ interface ParsableFeed
    * @return string
    */
   public function getCompressionType();
+  
+  /**
+   * Returns whether the feed is incremental
+   *
+   * @return boolean
+   */
+  public function isIncremental();
 
   /**
    * Refreshes the timestamp of the feed to show when it was last parsed
