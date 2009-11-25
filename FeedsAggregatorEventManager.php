@@ -14,18 +14,20 @@ abstract class FeedsAggregatorEventManager
    * @var string
    */
   const START_AGGREGATION = 'Start Aggregation';
+  
   /**
    * A constant to identify the 'end aggregation' event
    * 
    * @var string
    */
   const END_AGGREGATION = 'End Aggregation';
+  
   /**
    * The list of all the possible events
    * 
    * @var array
    */
-  public static $allowedEvents = array('Start Aggregation', 'End Aggregation');
+  public static $allowedEvents = array(self::START_AGGREGATION, self::END_AGGREGATION);
 
   /**
    * Stores the available event and the associated callback method.
@@ -67,7 +69,10 @@ abstract class FeedsAggregatorEventManager
       throw new Exception('The event ' . $eventName . ' is not defined');
     }
 
-    call_user_func(self::$eventsTable[$eventName]);
+    if (isset(self::$eventsTable[$eventName]))
+    {
+      return call_user_func(self::$eventsTable[$eventName]);
+    }
   }
   
   /**
