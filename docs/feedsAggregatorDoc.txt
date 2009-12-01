@@ -75,3 +75,4 @@ public function executeAggregate(sfWebRequest $request)
 To see which methods you need to provide in this class, have a look to XXXXFeedConverter
 
 Please remove this line
+
