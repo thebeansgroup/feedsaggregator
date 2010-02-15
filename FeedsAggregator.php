@@ -81,7 +81,7 @@ class FeedsAggregator
       try
       {
         $feedHandler = FeedHandler::getInstance($feed);
-        $feedHandler->downloadFeed();
+        $feedHandler->downloadFeed(strtolower($this->mainClassName));
         $feedHandler->openFeed();
         while (true)
         {

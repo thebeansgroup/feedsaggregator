@@ -121,14 +121,16 @@ abstract class FeedHandler
 
   /**
    * Downloads the feed and store it temporary in the /tmp directory
+   * 
+   * @param string $prefixTempFile - the prefix to use for the feed temporary file
    */
-  public function downloadFeed()
+  public function downloadFeed($prefixTempFile)
   {
     if (! $this->completeUrl)
     {
       throw new Exception("Feeds Aggregator - Couldn't retrieve the URL for the feed {$this->feed->getId()}");
     }
-    $outputFilepath = '/tmp/jobs-' . rand() . '-' . time();
+    $outputFilepath = '/tmp/' . $prefixTempFile . '-' . rand() . '-' . time();
 
     $usernameOption = '';
     if ($this->feed->getUsername())
