@@ -126,11 +126,27 @@ abstract class FeedHandler
    */
   public function downloadFeed($prefixTempFile)
   {
+    // this is the part of the path that is fixed for all the feeds downloaded for this project.
+    // After this fixed part, we append a random string
+    // THIS IS NOT only the directory where to download the feeds 
+    $temporaryFeedFileFixedPath = '/tmp/feedaggregator-' . $prefixTempFile . '-';
+    
+    // cleaning up: let's make sure the previous feed gets deleted
+    if ($temporaryFeedFileFixedPath && ($temporaryFeedFileFixedPath != '/') && (!is_dir($temporaryFeedFileFixedPath)))
+    {
+      throw new sfException();
+    }
+    else
+    {
+      exec("rm $temporaryFeedFileFixedPath*");
+    }
+    
+    
     if (! $this->completeUrl)
     {
       throw new Exception("Feeds Aggregator - Couldn't retrieve the URL for the feed {$this->feed->getId()}");
     }
-    $outputFilepath = '/tmp/' . $prefixTempFile . '-' . rand() . '-' . time();
+    $outputFilepath = $temporaryFeedFileFixedPath . rand() . '-' . time();
 
     $usernameOption = '';
     if ($this->feed->getUsername())
