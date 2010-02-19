@@ -130,17 +130,11 @@ abstract class FeedHandler
     // After this fixed part, we append a random string
     // THIS IS NOT only the directory where to download the feeds 
     $temporaryFeedFileFixedPath = '/tmp/feedaggregator-' . $prefixTempFile . '-';
-    
     // cleaning up: let's make sure the previous feed gets deleted
-    if ($temporaryFeedFileFixedPath && ($temporaryFeedFileFixedPath != '/') && (!is_dir($temporaryFeedFileFixedPath)))
-    {
-      throw new sfException();
-    }
-    else
+    if ($temporaryFeedFileFixedPath && (realpath($temporaryFeedFileFixedPath) != '/'))
     {
       exec("rm $temporaryFeedFileFixedPath*");
     }
-    
     
     if (! $this->completeUrl)
     {
