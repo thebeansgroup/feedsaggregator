@@ -132,7 +132,7 @@ class FeedsAggregator
       $feed->recordProcessingTime(time() - $processingStartTime);
     }
     FeedsAggregator::reportError('', true, $this->environment);
-    echo "<br /><br /><br />Aggregation completed.<br /><br /><br />";
+    echo "\n\nAggregation completed.\n\n";
     try
     {
       FeedsAggregatorEventManager::fire(FeedsAggregatorEventManager::END_AGGREGATION);
