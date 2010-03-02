@@ -153,7 +153,7 @@ abstract class FeedHandler
       $passwordOption = "--password='" . $this->feed->getPassword() . "'";
     }
 
-    exec("wget $usernameOption $passwordOption --output-document=$outputFilepath '$this->completeUrl'");
+    exec("wget --quiet $usernameOption $passwordOption --output-document=$outputFilepath '$this->completeUrl'");
 
     exec("chmod 775 $outputFilepath");
 
