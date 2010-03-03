@@ -119,6 +119,7 @@ class FeedsAggregator
         }
         $feed->refreshTimestamp();
         $feed->save();
+        echo "memory usage after parsing feed n.{$feed->getId()}: " . floor(memory_get_usage(true)/1024) . ' Kbytes';
       }
       catch(Exception $e)
       {
