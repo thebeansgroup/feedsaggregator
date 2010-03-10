@@ -78,8 +78,10 @@ class FeedsAggregator
     foreach ($this->feeds as $feed)
     {
         // The aggregation was made just by this line:
-        // $this->aggregateFeed($feed);
+        $this->aggregateFeed($feed);
         // We now want to fork to a new process for each feed to aggregate:
+
+        /*
         Propel::close();
 
         $pids[$i] = pcntl_fork();
@@ -95,6 +97,7 @@ class FeedsAggregator
         }
 
         $i++;
+         */
     }
     FeedsAggregator::reportError('', true, $this->environment);
     echo "\n\nAggregation completed.\n\n";
@@ -152,6 +155,7 @@ class FeedsAggregator
    */
   private function aggregateFeed($feed)
   {
+      echo "\n\n\n\n aggregation {$feed->getName()} \n\n\n\n";
       $processingStartTime = time();
       try
       {
