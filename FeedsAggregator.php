@@ -82,6 +82,8 @@ class FeedsAggregator
         // We now want to fork to a new process for each feed to aggregate:
         foreach ($this->feeds as $feed)
         {
+            Propel::close();
+
             $pids[$i] = pcntl_fork();
             if ($pids[$i] == -1) {
                     throw new sfException('could not fork');
