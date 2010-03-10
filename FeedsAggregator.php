@@ -77,7 +77,25 @@ class FeedsAggregator
 
     foreach ($this->feeds as $feed)
     {
-        $this->aggregateFeed($feed);
+        // The aggregation was made just by this line:
+        // $this->aggregateFeed($feed);
+        // We now want to fork to a new process for each feed to aggregate:
+        foreach ($this->feeds as $feed)
+        {
+            $pids[$i] = pcntl_fork();
+            if ($pids[$i] == -1) {
+                    throw new sfException('could not fork');
+            } else if ($pids[$i]) {
+                    // parent process
+                    pcntl_waitpid($pids[$i], $status); // wait till the end of the aggregation of a feed before going to the next one
+            } else {
+                    // we are the child
+                    $this->aggregateFeed($feed);
+                    exit;
+            }
+
+            $i++;
+        }
     }
     FeedsAggregator::reportError('', true, $this->environment);
     echo "\n\nAggregation completed.\n\n";
