@@ -10,7 +10,7 @@ class FeedsAggregator
    * It is the number of messages logged before a notification email is delivered
    */
   const NUMBER_OF_ERROR_MESSAGES_BEFORE_SENDING_NOTIFICATION = 100;
-  const DO_FORKING = true;
+  const DO_FORKING = false;
 
   /**
    * The feeds to aggregate
