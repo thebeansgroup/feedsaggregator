@@ -10,6 +10,7 @@ class FeedsAggregator
    * It is the number of messages logged before a notification email is delivered
    */
   const NUMBER_OF_ERROR_MESSAGES_BEFORE_SENDING_NOTIFICATION = 100;
+  const DO_FORKING = true;
 
   /**
    * The feeds to aggregate
@@ -78,26 +79,33 @@ class FeedsAggregator
     foreach ($this->feeds as $feed)
     {
         // The aggregation was made just by this line:
-        $this->aggregateFeed($feed);
+        //$this->aggregateFeed($feed);
         // We now want to fork to a new process for each feed to aggregate:
 
-        /*
-        Propel::close();
+        if (self::DO_FORKING)
+        {
+            Propel::close();
 
-        $pids[$i] = pcntl_fork();
-        if ($pids[$i] == -1) {
-                throw new sfException('could not fork');
-        } else if ($pids[$i]) {
-                // parent process
-                pcntl_waitpid($pids[$i], $status); // wait till the end of the aggregation of a feed before going to the next one
-        } else {
-                // we are the child
-                $this->aggregateFeed($feed);
-                exit;
+            $pids[$i] = pcntl_fork();
+            if ($pids[$i] == -1) {
+                    throw new sfException('could not fork');
+            } else if ($pids[$i]) {
+                    // parent process
+                echo "\nparent {$feed->getName()} \n\n";
+                    pcntl_waitpid($pids[$i], $status); // wait till the end of the aggregation of a feed before going to the next one
+            } else {
+                    // we are the child
+                echo "\nchild {$feed->getName()} \n\n";
+                    $this->aggregateFeed($feed);
+                    exit;
+            }
+
+            $i++;
         }
-
-        $i++;
-         */
+        else
+        {
+           $this->aggregateFeed($feed);
+        }
     }
     FeedsAggregator::reportError('', true, $this->environment);
     echo "\n\nAggregation completed.\n\n";
@@ -155,7 +163,6 @@ class FeedsAggregator
    */
   private function aggregateFeed($feed)
   {
-      echo "\n\n\n\n aggregation {$feed->getName()} \n\n\n\n";
       $processingStartTime = time();
       try
       {
