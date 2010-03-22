@@ -179,7 +179,7 @@ abstract class FeedHandler
           $outDir =  dirname($outputFilepath);
           $zipContents = shell_exec("/usr/bin/unzip -o $outputFilepath -d $outDir | tr -d '\n' | sed -e 's/.*inflating: //'");
           unlink($outputFilepath);
-          $outputFilepath = $zipContents;
+          $outputFilepath = trim($zipContents);
           break;
         case 'tar':
           // append '.tar.gz'
