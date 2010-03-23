@@ -76,3 +76,8 @@ To see which methods you need to provide in this class, have a look to XXXXFeedC
 
 Please remove this line
 
+General functoinality:
+- If you chose a node which has multiple siblings/children with the same name these will all be returned in an array
+  ordered by occourence
+- if you wish to get an attribute of a node you have to specify the node and then append the attribute with an @ sign
+  ie: NODENAME@ATTRIBUTENAME

@@ -15,7 +15,7 @@ abstract class FeedHandler
    * @var string
    */
   protected $feedFilepath;
-    /**
+  /**
    * @var string
    */
   protected $completeUrl;
@@ -97,7 +97,7 @@ abstract class FeedHandler
     {
       throw new Exception("Feeds Aggregator - Couldn't retrieve the parser");
     }
-    $this->feedParser = new $feedParserClassname();
+    $this->feedParser = new $feedParserClassname($this->feed);
   }
 
   /**
@@ -121,21 +121,21 @@ abstract class FeedHandler
 
   /**
    * Downloads the feed and store it temporary in the /tmp directory
-   * 
+   *
    * @param string $prefixTempFile - the prefix to use for the feed temporary file
    */
   public function downloadFeed($prefixTempFile)
   {
     // this is the part of the path that is fixed for all the feeds downloaded for this project.
     // After this fixed part, we append a random string
-    // THIS IS NOT only the directory where to download the feeds 
+    // THIS IS NOT only the directory where to download the feeds
     $temporaryFeedFileFixedPath = '/tmp/feedaggregator-' . $prefixTempFile . '-';
     // cleaning up: let's make sure the previous feed gets deleted
     if ($temporaryFeedFileFixedPath && (realpath($temporaryFeedFileFixedPath) != '/'))
     {
       exec("rm $temporaryFeedFileFixedPath*");
     }
-    
+
     if (! $this->completeUrl)
     {
       throw new Exception("Feeds Aggregator - Couldn't retrieve the URL for the feed {$this->feed->getId()}");
@@ -168,12 +168,12 @@ abstract class FeedHandler
       switch ($this->feed->getCompressionType())
       {
         case 'gzip':
-          // append '.gz' to the file name to keep gunzip happy
+        // append '.gz' to the file name to keep gunzip happy
           rename($outputFilepath, $outputFilepath.'.gz');
           system('/usr/bin/gunzip '.$outputFilepath.'.gz');
           break;
         case 'zip':
-          // append '.zip' to the file name to keep unzip happy
+        // append '.zip' to the file name to keep unzip happy
           rename($outputFilepath, $outputFilepath.'.zip');
           $outputFilepath .= '.zip';
           $outDir =  dirname($outputFilepath);
@@ -182,7 +182,7 @@ abstract class FeedHandler
           $outputFilepath = trim($zipContents);
           break;
         case 'tar':
-          // append '.tar.gz'
+        // append '.tar.gz'
           rename($outputFilepath, $outputFilepath.'.tar.gz');
           $output = array();
           exec('/bin/tar xvzf '.$outputFilepath.'.tar.gz -C '.$this->xpdo->filePath, $output);
@@ -190,7 +190,7 @@ abstract class FeedHandler
           $outDir =  dirname($outputFilepath);
           $outputFilepath = $outDir . '/' . $output[0];
           if (!file_exists($outputFilepath))
-          FeedsAggregator::reportError("Error untarring file for feed ".$this->feed->getId());
+            FeedsAggregator::reportError("Error untarring file for feed ".$this->feed->getId());
           break;
       }
     }
@@ -212,8 +212,9 @@ abstract class FeedHandler
    */
   public function getNextItem()
   {
-    $item = $this->feedParser->parseNextItem($this->getItemTag(), $this->getElementsArray());
+    $item = $this->feedParser->parseNextItem($this->getItemTag(), $this->getElementsArray(), $this);
     if (!count($item)) // no more items to retrieve
+
     {
       return false;
     }
@@ -223,6 +224,7 @@ abstract class FeedHandler
       if (trim($value) == '')
       {
         if (!in_array($element, $this->getOptionalElementsArray())) // the item is NOT optional
+
         {
           throw new Exception("The mandatory element $element is empty in the feed {$this->feedFilepath} for the item with this details " .  print_r($item, true));
         }
@@ -238,27 +240,50 @@ abstract class FeedHandler
         throw new Exception("The mandatory field $mandatoryField is missing in the feed {$this->feedFilepath} for the item with this details " .  print_r($item, true));
       }
     }
-
     // check every field is UTF8
     foreach($item as $element => $value)
     {
-      if (!FeedTextFilter::isValidUTF8($value))
+      if (!is_array($value))
       {
-        throw new Exception("The element $element in the feed {$this->feedFilepath} is NOT UTF8 for the item with this details " .  print_r($item, true));
+        if (!FeedTextFilter::isValidUTF8($value))
+        {
+          throw new Exception("The element $element in the feed {$this->feedFilepath} is NOT UTF8 for the item with this details " .  print_r($item, true));
+        }
       }
     }
 
+    // apply different filters to the items
     $item = array_merge($item, $this->getExtraElementsArray());
     foreach($item as $elementName => $elementValue)
     {
-      $item[$elementName] = $this->generalFilter($elementValue);
+      if (is_array($elementValue))
+      {
+        foreach ($elementValue as $elementArrayValue)
+        {
+          $elementArrayValue = $this->generalFilter($elementArrayValue);
+        }
+      }
+      else
+      {
+        $item[$elementName] = $this->generalFilter($elementValue);
+      }
     }
     foreach($item as $elementName => $elementValue)
     {
       $filterMethodName = $this->getFilterMethodName($elementName);
       if (method_exists($this, $filterMethodName))
       {
-        $item[$elementName] = $this->$filterMethodName($elementValue);
+        if (is_array($elementValue))
+        {
+          foreach ($elementValue as $elementArrayValue)
+          {
+            $elementArrayValue = $this->$filterMethodName($elementArrayValue);
+          }
+        }
+        else
+        {
+          $item[$elementName] = $this->$filterMethodName($elementValue);
+        }
       }
     }
     return $item;
