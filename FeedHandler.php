@@ -333,6 +333,16 @@ abstract class FeedHandler
     $this->itemArray = $itemArray;
   }
 
+  /*
+   * returns the current feed
+   *
+   * @return ParsableFeed
+   */
+  public function getFeed()
+  {
+    return $this->feed;
+  }
+
   /**
    * Returns the filter method name built according the element name
    *
