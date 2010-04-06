@@ -209,7 +209,7 @@ class FeedsAggregator
       }
       catch(Exception $e)
       {
-        self::reportError("Error parsing the feed with id {$feed->getHandlerName()} \n\n" . $e);
+        self::reportError("Error parsing the feed with handler name: {$feed->getHandlerName()} \n\n" . $e);
       }
       if (is_object($feedHandler))
       {
