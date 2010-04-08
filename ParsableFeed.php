@@ -49,6 +49,13 @@ interface ParsableFeed
    */
   public function getUrl();
 
+    /**
+   * Returns the type of the feed
+   *
+   * @return string
+   */
+  public function getType();
+
   /**
    * Returns whether the feed is active and available for parsing
    *
@@ -95,4 +102,6 @@ interface ParsableFeed
    * depending on what date it is i.e. http://www.example.com/feed/12-10-2009.rss
    */
   public function isDynamicUrl();
+
+  public function save();
 }
