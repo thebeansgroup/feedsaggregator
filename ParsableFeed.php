@@ -103,5 +103,5 @@ interface ParsableFeed
    */
   public function isDynamicUrl();
 
-  public function save(PropelPDO $con = null);
+  // public function save(PropelPDO $con = null);
 }
