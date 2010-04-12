@@ -193,7 +193,6 @@ class FeedsAggregator
 
           try
           {
-            echo "\nAggregating feed no {$feed->getId()} with url {$feed->getUrl()}\n";
             $feedConverter = FeedConverter::getInstance($itemArrayFromFeed, $this->mainClassName, $feed->getConverterName());
             $modelMapper = ModelMapper::getInstance($feedConverter, $this->mainClassName);
             $modelMapper->doMapping($feed->getId());
@@ -206,7 +205,7 @@ class FeedsAggregator
         }
         $feed->refreshTimestamp();
         $feed->save();
-        error_log("memory usage after parsing feed n.{$feed->getId()}: " . floor(memory_get_usage(true)/1024) . ' Kbytes');
+        error_log("memory usage after parsing feed n.{$feed->getId()} with url {$feed->getUrl()}: " . floor(memory_get_usage(true)/1024) . ' Kbytes');
       }
       catch(Exception $e)
       {
