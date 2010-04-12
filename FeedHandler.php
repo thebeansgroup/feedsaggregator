@@ -221,7 +221,7 @@ abstract class FeedHandler
     // check whether some mandatory fields are empty
     foreach($item as $element => $value)
     {
-      if (trim($value) == '')
+      if ( (!is_array($value) && trim($value) == '') ||  (is_array($value) && count($value) == 0) )
       {
         if (!in_array($element, $this->getOptionalElementsArray())) // the item is NOT optional
 
