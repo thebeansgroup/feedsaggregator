@@ -193,6 +193,7 @@ class FeedsAggregator
 
           try
           {
+            echo "\nAggregating feed no {$feed->getId()} with url {$feed->getUrl()}\n";
             $feedConverter = FeedConverter::getInstance($itemArrayFromFeed, $this->mainClassName, $feed->getConverterName());
             $modelMapper = ModelMapper::getInstance($feedConverter, $this->mainClassName);
             $modelMapper->doMapping($feed->getId());
