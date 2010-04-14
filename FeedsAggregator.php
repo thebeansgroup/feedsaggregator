@@ -167,7 +167,7 @@ class FeedsAggregator
       try
       {
         $feedHandler = FeedHandler::getInstance($feed);
-        $feedHandler->downloadFeed(strtolower($this->mainClassName));
+        $feedHandler->downloadFeed(strtolower($this->mainClassName . '-' . $this->environment));
         $feedHandler->openFeed();
         while (true)
         {
