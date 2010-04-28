@@ -50,11 +50,30 @@ class FeedsAggregator
     $this->environment = $environment;
   }
 
+  /*
+   * Deletes potential old temporary feeds
+   */
+  protected function cleanUp()
+  {
+    $prefixTempFile = strtolower($this->mainClassName . '-' . $this->environment);
+    // this is the part of the path that is fixed for all the feeds downloaded for this project.
+    // After this fixed part, we append a random string
+    // THIS IS NOT only the directory where to download the feeds
+    $temporaryFeedFileFixedPath = '/tmp/feedaggregator-' . $prefixTempFile . '-';
+    // cleaning up: let's make sure the previous feed gets deleted
+    if ($temporaryFeedFileFixedPath && (realpath($temporaryFeedFileFixedPath) != '/'))
+    {
+      exec("rm $temporaryFeedFileFixedPath*");
+    }
+  }
+
   /**
    * Performs the actual aggregation
    */
   public function aggregate()
   {
+    $this->cleanUp();
+
     try
     {
       $feedAggregatorConfig = FeedsAggregatorConfig::getInstance($this->mainClassName);
