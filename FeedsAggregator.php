@@ -186,7 +186,11 @@ class FeedsAggregator
       try
       {
         $feedHandler = FeedHandler::getInstance($feed);
-        $feedHandler->downloadFeed(strtolower($this->mainClassName . '-' . $this->environment));
+
+        if ($feed->getType() != 'SOAP') // using SOAP, we don't need to download anything, we will just hold the SOAP response
+        {
+            $feedHandler->downloadFeed(strtolower($this->mainClassName . '-' . $this->environment));
+        }
         $feedHandler->openFeed();
         while (true)
         {
