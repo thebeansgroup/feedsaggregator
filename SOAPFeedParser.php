@@ -41,6 +41,7 @@ class SOAPFeedParser extends FeedParser
     // _ the method to invoke
     list($wsdlPath, $methodToInvoke) = explode(' ', $feed->getUrl());
 
+    ini_set('soap.wsdl_cache_enabled', 0);
     $wsdlPath = "http://vacancies.webservices.targetjobs.co.uk:8004/TargetJobsSimplifiedVacancyServiceSoap?wsdl";
 
     $params = array('login' => $feed->getUsername(),
