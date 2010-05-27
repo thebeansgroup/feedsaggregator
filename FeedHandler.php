@@ -209,7 +209,6 @@ abstract class FeedHandler
   {
     $item = $this->feedParser->parseNextItem($this->getItemTag(), $this->getElementsArray(), $this);
     if (!count($item)) // no more items to retrieve
-
     {
       return false;
     }

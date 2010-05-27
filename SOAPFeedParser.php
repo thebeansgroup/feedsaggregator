@@ -77,7 +77,7 @@ class SOAPFeedParser extends FeedParser
    * @abstract
    * @param string $itemTag the tag name that wraps the item in the feed
    * @param array $elementsArray a list of *all* the tags an item can have
-   * @return associative array| false when there are not more elements
+   * @return associative array - the array will be empty when there will not be any item left
    */
   public function parseNextItem($itemTag, $elementsArray)
   {
@@ -94,7 +94,7 @@ class SOAPFeedParser extends FeedParser
     }
     else
     {
-        return false;
+        return array();
     }
 
     $callCounter++;
